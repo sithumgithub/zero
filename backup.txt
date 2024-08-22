@@ -1,80 +1,129 @@
-//Check version//
-SELECT VERSION();
+//install DHCP
 
-//Check current date//
-SELECT CURRENT_DATE; or SELECT NOW();
+sudo apt update
+sudo apt upgrade
 
-CREATE TABLE OrderBy(
-	OrderNo INT(5) PRIMARY KEY,
-	PurchaseAmount DOUBLE(10,2),
-	OrderDate DATE,
-	CustomerID INT(6),
-	SalesmanID INT(6),
-	FOREIGN KEY(CustomerID) REFERENCES Customer(CustomerID),
-	FOREIGN KEY(SalesmanID) REFERENCES Salesman(SalesmanID)
-	ON DELETE CASCADE ON UPDATE CASCADE
-);
+sudo apt install isc-dhcp-server -y
 
-//Insert values into table//
-	INSERT INTO students VALUES ('12/MBS/01','samantha','bandara','12, Main street, Kurunagala','m','1999-03-05','BMS','tceusl',NULL);
+//open dhcp cofig file
+sudo nano /var/lib/cloud/seed/00-installer-config.yaml
+Sudo nano /etc/00-installer-config.yaml
 
-	LOAD DATA LOCAL INFILE "C:/wamp64/bin/mysql/mysql5.7.36/data/blooddata.txt" INTO TABLE blood_data;
+//on nano type below
+addresses:[10.10.10.50/24]
+routes:
+-to: default
+via:10.10.10.1
+nameservers:
+address:[8.8.8.8, 8.8.8.4]
 
+//save and exit
+ctl+o
+ctl+x
 
+//reboot server
+sudo reboot
 
-// Altering a coloumn//
-ALTER TABLE students
--->	MODIFY COLUMN campus VARCHAR(6);
---> ADD address VARCHAR(30);
--->	ADD PRIMARY KEY (colmn_name);
--->	ADD FOREIGN KEY (colmn_name) REFERENCES table_name(colmn_name);
---> ADD FOREIGN KEY (SalesmanID) REFERENCES Salesman(SalesmanID) ON DELETE CASCADE ON UPDATE CASCADE;
+//take backup
 
+sudo cp /etc/dhcp/dhcpd.confi /etc/dhcp/dhcpd.config.bak
 
-//Updating a table(record)//
-	UPDATE students
-	SET campus = 'tceusl'
-	WHERE campus = 'tceus';
-	
-//DELETE table data
-	DELETE FROM table_name
-	WHERE condition;
-	
-//Ending or starting with special charactor
-	SELECT *FROM table_name 
-	--> WHERE colmn_name LIKE 'A%';
-	--> WHERE colmn_name LIKE '%A';
+//open file
+sudo nano /etc/dhcp/dhcpd.conf
 
-//INNER Join
-	SELECT* FROM table1 x
-	INNER JOIN table2 y
-	ON x.primary_key_name = y.forign_key_name;
-	
-	
-//LEFT join
-	SELECT* FROM table1 x
-	LEFT JOIN table2 y
-	ON x.primary_key_name = y.forign_key_name;
-	
+//apply changes
 
-SELECT 
-    EmployeeID AS "ID of the employee",
-    LastName AS "Name of the employee",
-    DepartmentID AS "Department ID"
-FROM Employee;
+ctl+0
+ctl+x
 
-//ASC ,DESC
-SELECT * FROM Employee
-ORDER BY LastName ASC, DepartmentID DESC;
+//restart dhcp
+sudo systemctl restart isc-dhcp-server
 
-//List Employees Who Earn More than the Lowest Salary in Their Department
-SELECT * FROM Employee e1
-WHERE Salary > (
-    SELECT MIN(Salary) FROM Employee e2 WHERE e2.DepartmentID = e1.DepartmentID
-);
+//check dhcp status
+sudo systemctl status isc-dhcp-status
+------------------------------------------
 
-//Show Number of Employees Working Under Every Manager
-SELECT ManagerID, COUNT(EmployeeID) AS EmployeeCount
-FROM Employee
-GROUP BY ManagerID;
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form site</title>
+</head>
+<body>
+    <form method="post" action="myform.php">
+        Username: <input type="text" name="uname"><br><br>
+        Password: <input type="password" name="upassword"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
 
+<?php
+$host = "localhost";
+$dbusername = "root";
+$dbpassword = "Testwebpw1$";
+$dbname = "myDB";
+
+//Create Connection
+$conn = new mysqli($host, $dbusername, $dbpassword, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$username = $_POST['uname'];
+$password = $_POST['upassword'];
+
+// Insert value in database table
+$sql = "INSERT INTO user (name, password) VALUES ('$username', '$password')";
+
+if ($conn->query($sql) === TRUE) {
+    echo "New record is inserted successfully";
+} else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+}
+
+$conn->close();
+?>
+
+-------------------------------------------------
+sudo useradd -m -c "Steve Smith" smith
+
+-d - Define custom home directory (Default /home/<username>)
+-g - Assign a group to this user (By default primary will be created same as username)
+-m - Create home directory if doesn’t exist
+-s - Specify the custom shell (Default shell is /bin/sh)
+-u - Assign unique identification number if needed
+
+---------------------------------------------------
+basic commands
+
+date "+%D %H:%M:%S"
+timedatectl - timezone
+sudo timedatectl set-timezone Asia/Colombo
+tty - connected terminal
+man shutshow - help
+pwd - working directory
+
+----------------------------------------------
+
+process
+
+ps - process in current shell
+ps -A  - all active processes
+ps -au  - ll process and process not associated with terminal
+ps -ef  - full format
+ps -x  - all the process owned by the current user
+ps -fu username/grpname/root  - display users, process by real user id or name.
+ps -e --forest  - process tree
+ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head  - top running process
+kill -o pid  - stop process
+
+-------------------------------------------------
+sudo apt install apache2
+sudo apt install mysql-server
+sudo systemctl start apache2
+SET PASSWORD FOR 'root'@'localhost' = PASSWORD('newpassword');
+
+sudo nano /etc/dhcp/dhcpd.conf
+sudo netplan apply
