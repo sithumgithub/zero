@@ -127,3 +127,9 @@ SET PASSWORD FOR 'root'@'localhost' = PASSWORD('newpassword');
 
 sudo nano /etc/dhcp/dhcpd.conf
 sudo netplan apply
+
+sudo adduser ''
+sudo passwd ''
+sudo addgroup ''
+sudo usermod -aG 'group' 'user'
+sudo deluser -g 'u'
