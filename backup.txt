@@ -1,135 +1,205 @@
-//install DHCP
+openssl enc -aes-192-ecb -in Image.png -out Image_encrypt.png -pass pass:CO3114
+openssl enc -d -aes-192-ecb -in Image_encrypt.png -out original.png -pass pass:CO3114
 
-sudo apt update
-sudo apt upgrade
+openssl enc -aes-128-ecb -in plain.txt -out cipher1.enc -pass pass:CO3114
+cat cipher1.enc
+openssl enc -des-ede3 -in cipher1.enc -out cipher2.enc -pass pass:CO3114
+openssl enc -d -des-ede3 -in cipher2.enc -out org1.enc -pass pass:CO3114
+openssl enc -d -aes-128 -ecb -in org1.enc -out org2.txt -pass pass:CO3114
 
-sudo apt install isc-dhcp-server -y
 
-//open dhcp cofig file
-sudo nano /var/lib/cloud/seed/00-installer-config.yaml
-Sudo nano /etc/00-installer-config.yaml
 
-//on nano type below
-addresses:[10.10.10.50/24]
-routes:
--to: default
-via:10.10.10.1
-nameservers:
-address:[8.8.8.8, 8.8.8.4]
 
-//save and exit
-ctl+o
-ctl+x
+import java.util.*;
 
-//reboot server
-sudo reboot
+public class Caesar_Cipher {
 
-//take backup
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        Caesar_Cipher obj = new Caesar_Cipher();
 
-sudo cp /etc/dhcp/dhcpd.confi /etc/dhcp/dhcpd.config.bak
+        char alphabet[]={'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+        int key = 3;
 
-//open file
-sudo nano /etc/dhcp/dhcpd.conf
+        System.out.print("Enter plaintext: ");
+        String readText = s.nextLine();
+        readText = readText.toUpperCase();
+        s.close();
 
-//apply changes
+        String cipherText = obj.encryption(readText, alphabet, key);
+        System.out.println("\ncipher text: " + cipherText);
 
-ctl+0
-ctl+x
+        String plainText = obj.decryption(cipherText, alphabet, key);
+        System.out.println("plain text: " + plainText);
+    }
 
-//restart dhcp
-sudo systemctl restart isc-dhcp-server
+    private String encryption(String plainText, char alphabet[], int key){
+        StringBuilder sb = new StringBuilder();
+        char check_space[] = {' '};
 
-//check dhcp status
-sudo systemctl status isc-dhcp-status
-------------------------------------------
+        for(int i=0; i<plainText.length(); i++){
+            if(plainText.charAt(i) == check_space[0])
+                sb.append(check_space[0]);
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Form site</title>
-</head>
-<body>
-    <form method="post" action="myform.php">
-        Username: <input type="text" name="uname"><br><br>
-        Password: <input type="password" name="upassword"><br><br>
-        <input type="submit" value="Submit">
-    </form>
-</body>
-</html>
+            for(int j=0; j<alphabet.length; j++){
+                if(plainText.charAt(i) == alphabet[j]){
+                    int keyValue = (j+key) % 26;
+                    sb.append(alphabet[keyValue]);
+                }
+            }
+        }
 
-<?php
-$host = "localhost";
-$dbusername = "root";
-$dbpassword = "Testwebpw1$";
-$dbname = "myDB";
+        String cipherText = sb.toString();
+        return cipherText;
+    }
+    
+    private String decryption(String cipherText, char alphabet[], int key){
+        StringBuilder sb = new StringBuilder();
+        char check_space[] = {' '};
 
-//Create Connection
-$conn = new mysqli($host, $dbusername, $dbpassword, $dbname);
+        for(int i=0; i<cipherText.length(); i++){
+            if(cipherText.charAt(i) == check_space[0])
+                sb.append(check_space[0]);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+            for(int j=0; j<alphabet.length; j++){
+                if(cipherText.charAt(i) == alphabet[j]){
+                    int keyValue = (j-key+26) % 26;
+                    sb.append(alphabet[keyValue]);
+                }
+            }
+        }
+
+        String plainText = sb.toString();
+        return plainText;
+    }
 }
 
-$username = $_POST['uname'];
-$password = $_POST['upassword'];
+--------------------------------
+RFCEncryption
 
-// Insert value in database table
-$sql = "INSERT INTO user (name, password) VALUES ('$username', '$password')";
+import java.util.*;
 
-if ($conn->query($sql) === TRUE) {
-    echo "New record is inserted successfully";
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+public class RFCEncryption {
+    public static void main(String args[]) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Input the plaintext message : ");
+        String plaintext = sc.nextLine();
+
+        System.out.print("Enter the Key Value : ");
+        int key = sc.nextInt();
+
+		sc.close();
+		
+		int pl = plaintext.length();
+		
+		char[][] keymatrix  = new char[key][pl];
+		char alphabet;
+		
+		int i = 0, j = 0;
+        boolean d = true;
+		
+        for ( j = 0; j < pl; j++){
+			if(d){
+				keymatrix[i][j] = plaintext.charAt(j);
+				i+=1;
+				if(i==(key-1)){
+					d = false;
+				}
+			}else{
+				keymatrix[i][j] = plaintext.charAt(j);
+				i-=1;
+				if(i==0){
+					d = true;
+				}
+			}
+		}
+		
+		for ( i = 0; i < key; i++) {
+			for ( j = 0; j < pl; j++) {
+				alphabet = keymatrix[i][j];
+				if (alphabet != '\0') {
+					System.out.print(alphabet);
+				}
+			}
+		}
+    }
 }
 
-$conn->close();
-?>
+--------------------------
+RFCDecryption
 
--------------------------------------------------
-sudo useradd -m -c "Steve Smith" smith
 
--d - Define custom home directory (Default /home/<username>)
--g - Assign a group to this user (By default primary will be created same as username)
--m - Create home directory if doesn’t exist
--s - Specify the custom shell (Default shell is /bin/sh)
--u - Assign unique identification number if needed
+import java.util.*;
 
----------------------------------------------------
-basic commands
+public class RFCDecryption {
+    public static void main(String args[]) {
 
-date "+%D %H:%M:%S"
-timedatectl - timezone
-sudo timedatectl set-timezone Asia/Colombo
-tty - connected terminal
-man shutshow - help
-pwd - working directory
+        Scanner sc = new Scanner(System.in);
 
-----------------------------------------------
+        System.out.print("Input the Ciphertext Message : ");
+        String ciphertext = sc.nextLine();
 
-process
+        System.out.print("Enter the Key Value : ");
+        int key = sc.nextInt();
 
-ps - process in current shell
-ps -A  - all active processes
-ps -au  - ll process and process not associated with terminal
-ps -ef  - full format
-ps -x  - all the process owned by the current user
-ps -fu username/grpname/root  - display users, process by real user id or name.
-ps -e --forest  - process tree
-ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head  - top running process
-kill -o pid  - stop process
+		sc.close();
 
--------------------------------------------------
-sudo apt install apache2
-sudo apt install mysql-server
-sudo systemctl start apache2
-SET PASSWORD FOR 'root'@'localhost' = PASSWORD('newpassword');
+        int pl = ciphertext.length();
 
-sudo nano /etc/dhcp/dhcpd.conf
-sudo netplan apply
+        char[][] keymatrix = new char[key][pl];
 
-sudo adduser ''
-sudo passwd ''
-sudo addgroup ''
-sudo usermod -aG 'group' 'user'
-sudo deluser -g 'u'
+		int i = 0, j = 0;
+        boolean d = true;
+
+        for ( j = 0; j < pl; j++){
+			if(d){
+				keymatrix[i][j] = '*';
+				i+=1;
+				if(i==(key-1)){
+					d = false;
+				}
+			}else{
+				keymatrix[i][j] = '*';
+				i-=1;
+				if(i==0){
+					d = true;
+				}
+			}
+		}
+
+        int x = 0;
+
+        for ( i = 0; i < key; i++){
+            for ( j = 0; j < pl; j++) {
+                if(keymatrix[i][j]=='*' && x < ciphertext.length()){
+                    keymatrix[i][j] = ciphertext.charAt(x);
+                    x++;
+                }
+            }
+        }
+
+        d = true; 
+        i = 0;
+
+        for (j = 0; j < pl; j++){
+			if(d){
+                System.out.print(keymatrix[i][j] );
+				i+=1;
+				if(i==(key-1)){
+					d = false;
+				}
+			}else{
+                System.out.print(keymatrix[i][j] );
+				i-=1;
+				if(i==0){
+					d = true;
+				}
+			}
+		}
+
+    }
+}
+
+
