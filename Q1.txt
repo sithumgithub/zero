@@ -1,0 +1,443 @@
+.data
+	prompt_int: .asciiz "Enter an integer: "
+	prompt_float: .asciiz "Enter a float:"
+	newline: .asciiz "\n"
+
+.text
+	.globl main
+	
+	main:
+		la $a0, prompt_int
+		li $v0, 4
+		syscall
+		jal read_integer
+		
+		move $a0, $v0
+		jal print_integer
+		
+		la $a0, prompt_float
+		li $v0, 4
+		syscall 
+		
+		jal read_float
+		
+		mov.s $f12, $f0
+		jal print_float
+		
+		li $v0, 10
+		syscall
+		
+		read_integer:
+		li $v0, 5
+		syscall
+		jr $ra
+		
+		print_integer:
+		li $v0, 1
+		syscall
+		la $a0, newline
+		li $v0,4
+		syscall
+		jr $ra
+		
+		read_float:
+		li $v0, 6
+		syscall 
+		jr $ra
+		
+		print_float:
+		li $v0, 2
+		syscall
+		la $a0, newline
+		li $v0, 4
+		syscall
+		jr $ra
+-------------
+
+.data
+	promptNum1: .asciiz "Enter the first single-digit number: "
+	promptNum2: .asciiz "Enter the second single-digit number: "
+	resultSum: .asciiz "Sum: "
+	resultSub: .asciiz "Subtraction: "
+	resultMul: .asciiz "Multiplication: "
+	resultDiv: .asciiz "Division: "
+	newline: .asciiz "\n"
+.text
+
+main:
+
+li $v0, 4
+la $a0, promptNum1
+syscall
+li $v0, 5 
+syscall
+move $t0, $v0 
+
+li $v0, 4
+la $a0, promptNum2
+syscall
+li $v0, 5 
+syscall
+move $t1, $v0 
+
+add $t2, $t0, $t1 
+sub $t3, $t0, $t1 
+mul $t4, $t0, $t1 
+div $t0, $t1 
+mflo $t5 
+
+
+li $v0, 4
+la $a0, resultSum
+syscall
+move $a0, $t2
+li $v0, 1 
+syscall
+li $v0, 4
+la $a0, newline
+syscall
+
+li $v0, 4
+la $a0, resultSub
+syscall
+move $a0, $t3
+li $v0, 1 
+syscall
+li $v0, 4
+la $a0, newline
+syscall
+
+li $v0, 4
+la $a0, resultMul
+syscall
+move $a0, $t4
+li $v0, 1 
+syscall
+li $v0, 4
+la $a0, newline
+syscall
+
+li $v0, 4
+la $a0, resultDiv
+syscall
+move $a0, $t5
+li $v0, 1 
+syscall
+li $v0, 4
+la $a0, newline
+syscall
+
+li $v0, 10
+syscall
+-------------
+
+.data
+	prompt:    .asciiz "Enter an integer: "
+	msgPos:    .asciiz "The number is positive.\n"
+	msgNeg:    .asciiz "The number is negative.\n"
+	msgZero:   .asciiz "The number is zero.\n"
+	newline:   .asciiz "\n"
+	output:    .asciiz "You entered: "
+	
+.text
+.globl main
+
+main:
+    li $v0, 4           
+    la $a0, prompt
+    syscall
+
+    li $v0, 5             
+    syscall
+    move $t0, $v0         
+
+    li $v0, 4             
+    la $a0, output
+    syscall
+
+    move $a0, $t0         
+    li $v0, 1             
+    syscall
+
+    li $v0, 4
+    la $a0, newline
+    syscall
+
+    bgt $t0, 0, positive  
+    blt $t0, 0, negative  
+
+zero:
+
+    li $v0, 4
+    la $a0, msgZero
+    syscall
+    j exit                
+
+positive:
+
+    li $v0, 4
+    la $a0, msgPos
+    syscall
+    j exit                
+
+negative:
+   
+    li $v0, 4
+    la $a0, msgNeg
+    syscall
+
+exit:
+   
+    li $v0, 10           
+    syscall
+--------------
+
+.data
+title:        .asciiz "Adding Machine\n"
+initialValue: .asciiz "Initial Value-0\n"
+commands:     .asciiz "Commands:\n0-Add\n1-Subtract\n2-Multiply\n3-Divide\n4-Clear\n5-Exit\n"
+promptCmd:    .asciiz "Enter a command: "
+promptVal:    .asciiz "Enter a value: "
+currentVal:   .asciiz "The current value-"
+newline:      .asciiz "\n"
+
+.text
+.globl main
+
+main:
+    li $t0, 0  
+
+    li $v0, 4
+    la $a0, title
+    syscall
+
+    li $v0, 4
+    la $a0, initialValue
+    syscall
+
+loop:
+    li $v0, 4
+    la $a0, commands
+    syscall
+
+    li $v0, 4
+    la $a0, promptCmd
+    syscall
+
+    li $v0, 5  
+    syscall
+    move $t1, $v0  
+
+    beq $t1, 0, addOperation
+    beq $t1, 1, subtractOperation
+    beq $t1, 2, multiplyOperation
+    beq $t1, 3, divideOperation
+    beq $t1, 4, clearOperation
+    beq $t1, 5, exitProgram
+
+    j loop
+
+addOperation:
+
+    li $v0, 4
+    la $a0, promptVal
+    syscall
+
+    li $v0, 5  
+    syscall
+    add $t0, $t0, $v0  
+
+    j printValue
+
+subtractOperation:
+
+    li $v0, 4
+    la $a0, promptVal
+    syscall
+
+    li $v0, 5  
+    syscall
+    sub $t0, $t0, $v0  
+
+    j printValue
+
+multiplyOperation:
+
+    li $v0, 4
+    la $a0, promptVal
+    syscall
+
+    li $v0, 5  
+    syscall
+    mul $t0, $t0, $v0  
+
+    j printValue
+
+divideOperation:
+
+    li $v0, 4
+    la $a0, promptVal
+    syscall
+
+    li $v0, 5 
+    syscall
+    beq $v0, 0, loop  
+    div $t0, $t0, $v0  
+
+    j printValue
+
+clearOperation:
+    li $t0, 0 
+    j printValue
+
+exitProgram:
+    li $v0, 10  
+    syscall
+
+printValue:
+
+    li $v0, 4
+    la $a0, currentVal
+    syscall
+
+    move $a0, $t0  
+    li $v0, 1  
+    syscall
+
+
+    li $v0, 4
+    la $a0, newline
+    syscall
+
+    j loop
+-----------------
+
+.data
+prompt_int_x:      .asciiz "Enter an integer x: "
+prompt_int_y:      .asciiz "Enter an integer y: "
+prompt_float_x:    .asciiz "Enter a float x: "
+prompt_float_y:    .asciiz "Enter a float y: "
+result_msg_int:    .asciiz "The result of 3x - 5y (integer) is: "
+result_msg_float:  .asciiz "The result of 3x - 5y (float) is: "
+newline:           .asciiz "\n"
+
+.text
+.globl main
+
+main:
+    
+    la $a0, prompt_int_x      
+    li $v0, 4                 
+    syscall
+
+    li $v0, 5                 
+    syscall
+    move $t0, $v0              
+
+    la $a0, prompt_int_y       
+    li $v0, 4                  
+    syscall
+
+    li $v0, 5                  
+    syscall
+    move $t1, $v0              
+
+    
+    li $t2, 3                  
+    mul $t3, $t0, $t2          
+    li $t2, 5                  
+    mul $t4, $t1, $t2          
+    sub $t5, $t3, $t4         
+
+    
+    la $a0, result_msg_int     
+    li $v0, 4                  
+    syscall
+
+    move $a0, $t5              
+    li $v0, 1                  
+    syscall
+
+    la $a0, newline            
+    li $v0, 4
+    syscall
+
+    
+    la $a0, prompt_float_x     
+    li $v0, 4                  
+    syscall
+
+    li $v0, 6                  
+    syscall
+    mov.s $f0, $f0             
+
+    la $a0, prompt_float_y     
+    li $v0, 4                  
+    syscall
+
+    li $v0, 6                  
+    syscall
+    mov.s $f1, $f0             
+
+   
+    li $t6, 3                  
+    mtc1 $t6, $f2
+    cvt.s.w $f2, $f2           
+    mul.s $f3, $f0, $f2       
+
+    li $t7, 5                 
+    mtc1 $t7, $f4             
+    cvt.s.w $f4, $f4           
+    mul.s $f5, $f1, $f4        
+
+    sub.s $f6, $f3, $f5        
+
+  
+    la $a0, result_msg_float   
+    li $v0, 4                  
+    syscall
+
+    mov.s $f12, $f6           
+    li $v0, 2                  
+    syscall
+
+    la $a0, newline           
+    li $v0, 4
+    syscall
+
+    
+    li $v0, 10                 
+    syscall
+---------------
+
+.data
+    newline: .asciiz "\n"  
+
+.text
+    .globl main
+
+main:
+    li $t0, 9              # Initialize the loop counter to 9
+
+loop:
+    
+    move $a0, $t0          
+    li $v0, 1              
+    syscall                
+
+    la $a0, newline       
+    li $v0, 4              
+    syscall                
+
+    subi $t0, $t0, 1       
+
+    bge $t0, 1, loop       
+
+    li $v0, 10             
+    syscall                
+		
+		
+		
+		
+		
+		
