@@ -1,193 +1,160 @@
-package test01;
+<?php
+    $localhost="localhost";
+    $username="root";
+    $password= "";
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.Select;
+    $conn = new mysqli($localhost,$username, $password);
 
-public class first_test {
-
-	public static void main(String[] args) {
-		
-		System.setProperty("webdriver.chrome.driver","chromedriver.exe");
-		
-		ChromeDriver driver = new ChromeDriver();
-		
-		driver.navigate().to("file:///\\index.html");
-		
-		driver.manage().window().maximize();
-		
-		driver.findElement(By.name("f_name")).sendKeys("Amal");
-		driver.findElement(By.name("l_name")).sendKeys("Fernando");
-		driver.findElement(By.name("dob")).sendKeys("06-10-1985");
-		driver.findElement(By.id("email")).sendKeys("amal@yahoo.com");
-		driver.findElement(By.name("phnno")).sendKeys("+94 76 020 23 34");
-		driver.findElement(By.id("adrs")).sendKeys("sgsds, sahgs");
-		driver.findElement(By.id("male")).click();
-		driver.findElement(By.id("hobby_1")).click();
-		driver.findElement(By.id("hobby_2")).click();
-		
-		WebElement dropdownElement = driver.findElement(By.id("course"));
-		Select dropdown = new Select(dropdownElement);
-		dropdown.selectByVisibleText("BSC");
-		
-		WebElement passwordField = driver.findElement(By.id("password"));
-		passwordField.sendKeys("amal@456");
-		
-		WebElement retypePassWordFiled = driver.findElement(By.id("retype_password"));
-		retypePassWordFiled.sendKeys("amal@456");
-		
-		String checkpassword = passwordField.getAttribute("value"); 
-		String retypepassword = passwordField.getAttribute("value"); 
-		
-		if (checkpassword.equals(retypepassword)) {
-			System.out.println("Passwords are equal.");
-		}
-		else {
-			System.out.println("Passwords are not eqal.");
-			retypePassWordFiled.clear();
-			}
-		
-		driver.findElement(By.name("result")).sendKeys("@A and B");
-		driver.findElement(By.name("z_score")).sendKeys("1.225");
-	    driver.findElement(By.name("d_rank")).sendKeys("1");		
-	}
-}
--------------------------------
-package test01;
-
-import java.util.concurrent.TimeUnit;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.Select;
-
-public class employee {
-	
-	public static void main(String args[]) {
-		
-		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
-		WebDriver driver = new ChromeDriver();
-		
-		driver.navigate().to("http://localhost/employee/admin");
-		
-		driver.manage().window().maximize();
-		
-		WebElement inputUserName = driver.findElement(By.name("username"));
-		inputUserName.sendKeys("admin");
-				
-		WebElement inputUserPassword = driver.findElement(By.name("password"));
-		inputUserPassword.sendKeys("admin123");
-				
-		if(inputUserName.getAttribute("value").isEmpty()) {
-			System.out.println("Username is empty!");
-		}
-				else if(inputUserPassword.getAttribute("value").isEmpty()) {
-			System.out.println("Password is empty!");
-		}
-		else {
-			driver.findElement(By.xpath("//button[text()='Login ']")).click();
-		}
-		
-		driver.findElement(By.id("Employee")).click();
-		
-		//checking search box
-		driver.findElement(By.xpath("//*[@id=\"table_filter\"]/label/input")).sendKeys("pa");     
-
-		//checking add new button working
-		driver.findElement(By.id("new_emp_btn")).click();
-
-		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-
-		driver.findElement(By.name("firstname")).sendKeys("Ravi");
-		driver.findElement(By.name("middlename")).sendKeys("kumar");
-		driver.findElement(By.name("lastname")).sendKeys("Ramesh");
-		driver.findElement(By.name("department")).sendKeys("HR");
-		driver.findElement(By.name("position")).sendKeys("Staff");
-
-		driver.findElement(By.xpath("//butoon[text()=' Save']")).click();
-//		driver.findElement(By.xpath("//*[@id=\"employee_frm\"]/div[2]/buttton")).click();		
-	}
-}
-
-----------------------
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
-public class user_demo {
-	WebDriver driver;
-
-    @BeforeTest
-    public void setUp() { 
-        System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.get("http://localhost/employee/admin/users.php"); 
+    if($conn->connect_error){
+        echo"connection error ".$conn->connect_error;
     }
-    
-    @Test(priority = 1)
-    public void login() { 
-        driver.findElement(By.name("username")).sendKeys("admin");
-        driver.findElement(By.name("password")).sendKeys("admin123");
-        driver.findElement(By.xpath("//button[text()='Login ']")).click();
+    else{
+        $sql= "CREATE DATABASE book";
 
-        // Check login success or failure, show error message if fail
-        if (driver.getPageSource().contains("error")) {
-            System.out.println("Login failed: Invalid credentials");
-        } else {
-            System.out.println("Login successful");
+        if($conn->query($sql)===true){
+            
+            $use_quary = "USE book";
+
+            if($conn->query($use_quary)===true){
+                
+                $create_table = "CREATE TABLE book_info (
+                        ism VARCHAR(192),
+                        title VARCHAR(192),
+                        author VARCHAR(150),
+                        edddion VARCHAR(100),
+                        publisher VARCHAR(192) 
+                )";
+
+                if($conn->query($create_table)===true){
+                    
+                    if($_SERVER["REQUEST_METHOD"]=="POST"){
+
+                        $ism = $_POST['ism'];
+                        $title = $_POST['title'];
+                        $author = $_POST['author'];
+                        $edddion = $_POST['edition'];
+                        $publisher = $_POST['publisher'];
+                        
+
+                        $insert_query = $conn->prepare("INSERT INTO book_info (ism, title, author, edddion, publisher) VALUES (?,?,?,?,?)");
+                        $insert_query ->bind_param("sssss",  $ism, $title, $author, $edddion, $publisher) ;
+                        
+                        if($insert_query->execute()){
+                            echo "data inserted";
+                        }
+                        else{
+                            echo "error data insert".$conn->error;
+                        }
+                  
+                        $insert_query->close();
+
+                    }
+            }
+            else{
+                echo "error table create".$conn->error;
+            }
+        }
+        }
+        else{
+            echo "error database create".$conn->error;
+        }
+    }  
+?>
+--------
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Insert Book Info</title>
+    <link rel = "stylesheet" href="./style.css">
+</head>
+<body>
+    <form action="action.php" method="POST">
+        <label for="ism">ISM:</label>
+        <input type="text" id="ism" name="ism" required><br><br>
+        
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required><br><br>
+        
+        <label for="author">Author:</label>
+        <input type="text" id="author" name="author" required><br><br>
+        
+        <label for="edition">Edition:</label>
+        <input type="text" id="edition" name="edition" required><br><br>
+        
+        <label for="publisher">Publisher:</label>
+        <input type="text" id="publisher" name="publisher" required><br><br>
+        
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
+----------
+
+<?php
+    $localhost="localhost";
+    $username="root";
+    $password="";
+
+    $conn= new mysqli($localhost, $username,$password);
+
+    if($conn->connect_error){
+        echo"Connection failed" . $conn->connect_error;
+    }
+    else{
+        echo"\n Connection Success";
+        
+        $create_sql= "CREATE DATABASE fasDB";
+
+        $use_quary=" USE fasdb";
+
+        if ($conn->query($use_quary)===true) 
+        {
+    
+            echo"use Success";
+
+        if ($conn->query($create_sql)===true) {
+            echo "\n Succeful"; 
+            
+            $create_table="CREATE TABLE Students(
+                title VARCHAR(5),
+                firstname VARCHAR(40),
+                lastname VARCHAR(40),
+                reg_no VARCHAR(20),
+                index_no INT AUTO_INCREMENT PRIMARY KEY,
+                date_of_birth DATE,
+                email VARCHAR(50),
+                course VARCHAR(20),
+                address VARCHAR(60)
+            )";
+
+            if ($conn->query($create_table)===true) {
+                echo "\n table Succeful"; 
+
+                $sql_insertquery="INSERT INTO Students (title, firstname, lastname, reg_no, date_of_birth, email, course, address)
+                VALUES 
+                ('Mr', 'Sumith', 'Fernndo', '2345', '1999-08-09', 'sumith1@gmail.com', 'Science', '345 Mathara')";
+
+                if ($conn->query($sql_insertquery)===true) {
+
+                    echo "\n insert Succeful"; 
+                    
+                }else{
+                    echo "error insert". $conn->error;
+                }
+               
+            }else{
+                echo "error table". $conn->error;
+            }
+        }
+        else{
+            echo "error useDB". $conn->error;
+        }
+        }
+        else{
+            echo "error db". $conn->error;
         }
     }
-    
-    @Test(priority = 2, dependsOnMethods = "login")
-    public void searchEmployee() { 
-    	driver.findElement(By.id("Employee")).click();
-        driver.findElement(By.xpath("//*[@id=\"table_filter\"]/label/input")).sendKeys("ab");
 
-       
-        if (driver.getPageSource().contains("employee data identifier")) {
-            System.out.println("Data detected");
-        } else {
-            System.out.println("Data undetected");
-        }
-    }
-    
-    @Test(priority = 3, dependsOnMethods = "login")
-    public void deleteEmployeeRecord() { 
-    	driver.findElement(By.id("Employee")).click();
-    	driver.findElement(By.xpath("//*[@id=\"table_filter\"]/label/input")).sendKeys("ad"); 
-        driver.findElement(By.xpath("//*[@id=\"table\"]/tbody/tr[1]/td[7]/center/button[2]")).click(); 
-        System.out.println("Employee record deleted");
-    }
-    
-    @Test(priority = 4, dependsOnMethods = "login")
-    public void updateUser() {
-    	driver.findElement(By.id("Employee")).click();
-        driver.findElement(By.xpath("//*[@id=\"table\"]/tbody/tr[1]/td[7]/center/button[1]")).click(); 
-        driver.findElement(By.cssSelector("button.close")).click();  
-        System.out.println("Update user popup closed");
-    }
-    
-    @Test(priority = 6, dependsOnMethods = "login")
-    public void addUser() {
-    	driver.findElement(By.id("Employee")).click();
-    	driver.findElement(By.id("new_emp_btn")).click();
-        driver.findElement(By.name("close")).click(); 
-        System.out.println("Add new user popup closed");
-    }
-    
-    @AfterTest
-    public void tearDown() {
-        driver.findElement(By.xpath("/html/body/nav/div/div[2]/a")).click(); 
-        driver.quit();
-        System.out.println("Logged out and browser closed");
-    }
-}
-
+    $conn->close();
+?>
