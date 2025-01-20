@@ -1,160 +1,219 @@
-<?php
-    $localhost="localhost";
-    $username="root";
-    $password= "";
+// Bibliography system using OOP concepts
+class Book {
+    private int bookID;
+    private String title;
+    private String author;
+    private boolean available;
 
-    $conn = new mysqli($localhost,$username, $password);
-
-    if($conn->connect_error){
-        echo"connection error ".$conn->connect_error;
+    // Constructor
+    public Book(int bookID, String title, String author) {
+        this.bookID = bookID;
+        this.title = title;
+        this.author = author;
+        this.available = true; // Default to available
     }
-    else{
-        $sql= "CREATE DATABASE book";
 
-        if($conn->query($sql)===true){
-            
-            $use_quary = "USE book";
-
-            if($conn->query($use_quary)===true){
-                
-                $create_table = "CREATE TABLE book_info (
-                        ism VARCHAR(192),
-                        title VARCHAR(192),
-                        author VARCHAR(150),
-                        edddion VARCHAR(100),
-                        publisher VARCHAR(192) 
-                )";
-
-                if($conn->query($create_table)===true){
-                    
-                    if($_SERVER["REQUEST_METHOD"]=="POST"){
-
-                        $ism = $_POST['ism'];
-                        $title = $_POST['title'];
-                        $author = $_POST['author'];
-                        $edddion = $_POST['edition'];
-                        $publisher = $_POST['publisher'];
-                        
-
-                        $insert_query = $conn->prepare("INSERT INTO book_info (ism, title, author, edddion, publisher) VALUES (?,?,?,?,?)");
-                        $insert_query ->bind_param("sssss",  $ism, $title, $author, $edddion, $publisher) ;
-                        
-                        if($insert_query->execute()){
-                            echo "data inserted";
-                        }
-                        else{
-                            echo "error data insert".$conn->error;
-                        }
-                  
-                        $insert_query->close();
-
-                    }
-            }
-            else{
-                echo "error table create".$conn->error;
-            }
-        }
-        }
-        else{
-            echo "error database create".$conn->error;
-        }
-    }  
-?>
---------
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Insert Book Info</title>
-    <link rel = "stylesheet" href="./style.css">
-</head>
-<body>
-    <form action="action.php" method="POST">
-        <label for="ism">ISM:</label>
-        <input type="text" id="ism" name="ism" required><br><br>
-        
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required><br><br>
-        
-        <label for="author">Author:</label>
-        <input type="text" id="author" name="author" required><br><br>
-        
-        <label for="edition">Edition:</label>
-        <input type="text" id="edition" name="edition" required><br><br>
-        
-        <label for="publisher">Publisher:</label>
-        <input type="text" id="publisher" name="publisher" required><br><br>
-        
-        <button type="submit">Submit</button>
-    </form>
-</body>
-</html>
-----------
-
-<?php
-    $localhost="localhost";
-    $username="root";
-    $password="";
-
-    $conn= new mysqli($localhost, $username,$password);
-
-    if($conn->connect_error){
-        echo"Connection failed" . $conn->connect_error;
-    }
-    else{
-        echo"\n Connection Success";
-        
-        $create_sql= "CREATE DATABASE fasDB";
-
-        $use_quary=" USE fasdb";
-
-        if ($conn->query($use_quary)===true) 
-        {
-    
-            echo"use Success";
-
-        if ($conn->query($create_sql)===true) {
-            echo "\n Succeful"; 
-            
-            $create_table="CREATE TABLE Students(
-                title VARCHAR(5),
-                firstname VARCHAR(40),
-                lastname VARCHAR(40),
-                reg_no VARCHAR(20),
-                index_no INT AUTO_INCREMENT PRIMARY KEY,
-                date_of_birth DATE,
-                email VARCHAR(50),
-                course VARCHAR(20),
-                address VARCHAR(60)
-            )";
-
-            if ($conn->query($create_table)===true) {
-                echo "\n table Succeful"; 
-
-                $sql_insertquery="INSERT INTO Students (title, firstname, lastname, reg_no, date_of_birth, email, course, address)
-                VALUES 
-                ('Mr', 'Sumith', 'Fernndo', '2345', '1999-08-09', 'sumith1@gmail.com', 'Science', '345 Mathara')";
-
-                if ($conn->query($sql_insertquery)===true) {
-
-                    echo "\n insert Succeful"; 
-                    
-                }else{
-                    echo "error insert". $conn->error;
-                }
-               
-            }else{
-                echo "error table". $conn->error;
-            }
-        }
-        else{
-            echo "error useDB". $conn->error;
-        }
-        }
-        else{
-            echo "error db". $conn->error;
+    // Method to mark the book as borrowed
+    public void borrowBook() {
+        if (available) {
+            available = false;
+            System.out.println("Book " + title + " borrowed successfully.");
+        } else {
+            System.out.println("Book " + title + " is already borrowed.");
         }
     }
 
-    $conn->close();
-?>
+    // Method to mark the book as available
+    public void returnBook() {
+        available = true;
+        System.out.println("Book " + title + " returned successfully.");
+    }
+
+    // Method to display book details
+    public void displayInfo() {
+        System.out.println("Book ID: " + bookID);
+        System.out.println("Title: " + title);
+        System.out.println("Author: " + author);
+        System.out.println("Available: " + (available ? "Yes" : "No"));
+    }
+
+    // Getter for availability
+    public boolean isAvailable() {
+        return available;
+    }
+}
+
+class Member {
+    private int memberID;
+    private String name;
+    private Book borrowedBook;
+
+    // Constructor
+    public Member(int memberID, String name) {
+        this.memberID = memberID;
+        this.name = name;
+        this.borrowedBook = null; 
+    }
+
+    // Method to borrow a book
+    public void borrowBook(Book b) {
+        if (borrowedBook != null) {
+            System.out.println("Member " + name + " already has a borrowed book.");
+        } else if (b.isAvailable()) {
+            borrowedBook = b;
+            b.borrowBook();
+        } else {
+            System.out.println("The book " + b.title + " is not available.");
+        }
+    }
+
+    // Method to return a borrowed book
+    public void returnBook() {
+        if (borrowedBook != null) {
+            borrowedBook.returnBook();
+            borrowedBook = null;
+        } else {
+            System.out.println("No book to return for member " + name + ".");
+        }
+    }
+
+    // Method to display member details
+    public void displayInfo() {
+        System.out.println("Member ID: " + memberID);
+        System.out.println("Name: " + name);
+        if (borrowedBook != null) {
+            System.out.println("Borrowed Book: " + borrowedBook.title);
+        } else {
+            System.out.println("No book borrowed.");
+        }
+    }
+}
+
+public class LibraryManagement {
+    public static void main(String[] args) {
+        // Create Book objects
+        Book book1 = new Book(1, "The Great Gatsby", "F. Scott Fitzgerald");
+        Book book2 = new Book(2, "1984", "George Orwell");
+        Book book3 = new Book(3, "To Kill a Mockingbird", "Harper Lee");
+
+        // Create Member objects
+        Member member1 = new Member(101, "Alice");
+        Member member2 = new Member(102, "Bob");
+
+        // Demonstrate borrowing books
+        member1.borrowBook(book1); // Alice borrows The Great Gatsby
+        member2.borrowBook(book1); // Bob tries to borrow The Great Gatsby (already borrowed)
+        member2.borrowBook(book2); // Bob borrows 1984
+
+        // Demonstrate returning books
+        member1.returnBook(); // Alice returns her book
+        member2.returnBook(); // Bob returns his book
+
+        // Display details of all books
+        System.out.println("\nBook Details:");
+        book1.displayInfo();
+        book2.displayInfo();
+        book3.displayInfo();
+
+        // Display details of all members
+        System.out.println("\nMember Details:");
+        member1.displayInfo();
+        member2.displayInfo();
+    }
+}
+-----------------
+
+
+class PrintAscending {
+    public void printNumbers() {
+        for (int i = 5; i <= 10; i++) {
+            System.out.println(i);
+            delay();
+        }
+    }
+}
+
+class PrintDescending {
+    public void printNumbers() {
+        for (int i = 10; i >= 5; i--) {
+            System.out.println(i);
+            delay();
+        }
+    }
+}
+
+class PrintLetters {
+    public void printLetters() {
+        for (char c = 'a'; c <= 'f'; c++) {
+            System.out.println(c);
+            delay();
+        }
+    }
+}
+
+public class SimpleProgram {
+    public static void main(String[] args) {
+        new PrintAscending().printNumbers();
+        new PrintDescending().printNumbers();
+        new PrintLetters().printLetters();
+    }
+
+    private static void delay() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+//
+
+class AscendingThread extends Thread {
+    @Override
+    public void run() {
+        for (int i = 5; i <= 10; i++) {
+            System.out.println(i);
+            delay();
+        }
+    }
+}
+
+class DescendingThread extends Thread {
+    @Override
+    public void run() {
+        for (int i = 10; i >= 5; i--) {
+            System.out.println(i);
+            delay();
+        }
+    }
+}
+
+class LettersThread extends Thread {
+    @Override
+    public void run() {
+        for (char c = 'a'; c <= 'f'; c++) {
+            System.out.println(c);
+            delay();
+        }
+    }
+}
+
+public class ThreadedProgram {
+    public static void main(String[] args) {
+        new AscendingThread().start();
+        new DescendingThread().start();
+        new LettersThread().start();
+    }
+
+    private static void delay() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+// Part (a): Executes sequentially—one task completes before the next starts.
+// Part (b): Runs tasks concurrently, leading to interleaved output depending on thread scheduling.
