@@ -1,0 +1,160 @@
+<?php
+    $localhost="localhost";
+    $username="root";
+    $password= "";
+
+    $conn = new mysqli($localhost,$username, $password);
+
+    if($conn->connect_error){
+        echo"connection error ".$conn->connect_error;
+    }
+    else{
+        $sql= "CREATE DATABASE book";
+
+        if($conn->query($sql)===true){
+            
+            $use_quary = "USE book";
+
+            if($conn->query($use_quary)===true){
+                
+                $create_table = "CREATE TABLE book_info (
+                        ism VARCHAR(192),
+                        title VARCHAR(192),
+                        author VARCHAR(150),
+                        edddion VARCHAR(100),
+                        publisher VARCHAR(192) 
+                )";
+
+                if($conn->query($create_table)===true){
+                    
+                    if($_SERVER["REQUEST_METHOD"]=="POST"){
+
+                        $ism = $_POST['ism'];
+                        $title = $_POST['title'];
+                        $author = $_POST['author'];
+                        $edddion = $_POST['edition'];
+                        $publisher = $_POST['publisher'];
+                        
+
+                        $insert_query = $conn->prepare("INSERT INTO book_info (ism, title, author, edddion, publisher) VALUES (?,?,?,?,?)");
+                        $insert_query ->bind_param("sssss",  $ism, $title, $author, $edddion, $publisher) ;
+                        
+                        if($insert_query->execute()){
+                            echo "data inserted";
+                        }
+                        else{
+                            echo "error data insert".$conn->error;
+                        }
+                  
+                        $insert_query->close();
+
+                    }
+            }
+            else{
+                echo "error table create".$conn->error;
+            }
+        }
+        }
+        else{
+            echo "error database create".$conn->error;
+        }
+    }  
+?>
+--------
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Insert Book Info</title>
+    <link rel = "stylesheet" href="./style.css">
+</head>
+<body>
+    <form action="action.php" method="POST">
+        <label for="ism">ISM:</label>
+        <input type="text" id="ism" name="ism" required><br><br>
+        
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required><br><br>
+        
+        <label for="author">Author:</label>
+        <input type="text" id="author" name="author" required><br><br>
+        
+        <label for="edition">Edition:</label>
+        <input type="text" id="edition" name="edition" required><br><br>
+        
+        <label for="publisher">Publisher:</label>
+        <input type="text" id="publisher" name="publisher" required><br><br>
+        
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
+----------
+
+<?php
+    $localhost="localhost";
+    $username="root";
+    $password="";
+
+    $conn= new mysqli($localhost, $username,$password);
+
+    if($conn->connect_error){
+        echo"Connection failed" . $conn->connect_error;
+    }
+    else{
+        echo"\n Connection Success";
+        
+        $create_sql= "CREATE DATABASE fasDB";
+
+        $use_quary=" USE fasdb";
+
+        if ($conn->query($use_quary)===true) 
+        {
+    
+            echo"use Success";
+
+        if ($conn->query($create_sql)===true) {
+            echo "\n Succeful"; 
+            
+            $create_table="CREATE TABLE Students(
+                title VARCHAR(5),
+                firstname VARCHAR(40),
+                lastname VARCHAR(40),
+                reg_no VARCHAR(20),
+                index_no INT AUTO_INCREMENT PRIMARY KEY,
+                date_of_birth DATE,
+                email VARCHAR(50),
+                course VARCHAR(20),
+                address VARCHAR(60)
+            )";
+
+            if ($conn->query($create_table)===true) {
+                echo "\n table Succeful"; 
+
+                $sql_insertquery="INSERT INTO Students (title, firstname, lastname, reg_no, date_of_birth, email, course, address)
+                VALUES 
+                ('Mr', 'Sumith', 'Fernndo', '2345', '1999-08-09', 'sumith1@gmail.com', 'Science', '345 Mathara')";
+
+                if ($conn->query($sql_insertquery)===true) {
+
+                    echo "\n insert Succeful"; 
+                    
+                }else{
+                    echo "error insert". $conn->error;
+                }
+               
+            }else{
+                echo "error table". $conn->error;
+            }
+        }
+        else{
+            echo "error useDB". $conn->error;
+        }
+        }
+        else{
+            echo "error db". $conn->error;
+        }
+    }
+
+    $conn->close();
+?>
