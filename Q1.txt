@@ -1,0 +1,418 @@
+// Bibliography system using OOP concepts
+class Book {
+    private int bookID;
+    private String title;
+    private String author;
+    private boolean available;
+
+    // Constructor
+    public Book(int bookID, String title, String author) {
+        this.bookID = bookID;
+        this.title = title;
+        this.author = author;
+        this.available = true; // Default to available
+    }
+
+    // Method to mark the book as borrowed
+    public void borrowBook() {
+        if (available) {
+            available = false;
+            System.out.println("Book " + title + " borrowed successfully.");
+        } else {
+            System.out.println("Book " + title + " is already borrowed.");
+        }
+    }
+
+    // Method to mark the book as available
+    public void returnBook() {
+        available = true;
+        System.out.println("Book " + title + " returned successfully.");
+    }
+
+    // Method to display book details
+    public void displayInfo() {
+        System.out.println("Book ID: " + bookID);
+        System.out.println("Title: " + title);
+        System.out.println("Author: " + author);
+        System.out.println("Available: " + (available ? "Yes" : "No"));
+    }
+
+    // Getter for availability
+    public boolean isAvailable() {
+        return available;
+    }
+}
+
+class Member {
+    private int memberID;
+    private String name;
+    private Book borrowedBook;
+
+    // Constructor
+    public Member(int memberID, String name) {
+        this.memberID = memberID;
+        this.name = name;
+        this.borrowedBook = null; 
+    }
+
+    // Method to borrow a book
+    public void borrowBook(Book b) {
+        if (borrowedBook != null) {
+            System.out.println("Member " + name + " already has a borrowed book.");
+        } else if (b.isAvailable()) {
+            borrowedBook = b;
+            b.borrowBook();
+        } else {
+            System.out.println("The book " + b.title + " is not available.");
+        }
+    }
+
+    // Method to return a borrowed book
+    public void returnBook() {
+        if (borrowedBook != null) {
+            borrowedBook.returnBook();
+            borrowedBook = null;
+        } else {
+            System.out.println("No book to return for member " + name + ".");
+        }
+    }
+
+    // Method to display member details
+    public void displayInfo() {
+        System.out.println("Member ID: " + memberID);
+        System.out.println("Name: " + name);
+        if (borrowedBook != null) {
+            System.out.println("Borrowed Book: " + borrowedBook.title);
+        } else {
+            System.out.println("No book borrowed.");
+        }
+    }
+}
+
+public class LibraryManagement {
+    public static void main(String[] args) {
+    
+        Book book1 = new Book(1, "The Great Gatsby", "F. Scott Fitzgerald");
+        Book book2 = new Book(2, "1984", "George Orwell");
+        Book book3 = new Book(3, "To Kill a Mockingbird", "Harper Lee");
+
+    
+        Member member1 = new Member(101, "Alice");
+        Member member2 = new Member(102, "Bob");
+
+   
+        member1.borrowBook(book1); 
+        member2.borrowBook(book1); 
+        member2.borrowBook(book2); 
+
+     
+        member1.returnBook(); 
+        member2.returnBook(); 
+
+     
+        System.out.println("\nBook Details:");
+        book1.displayInfo();
+        book2.displayInfo();
+        book3.displayInfo();
+
+  
+        System.out.println("\nMember Details:");
+        member1.displayInfo();
+        member2.displayInfo();
+    }
+}
+-----------------
+
+
+class PrintAscending {
+    public void printNumbers() {
+        for (int i = 5; i <= 10; i++) {
+            System.out.println(i);
+            delay();
+        }
+    }
+}
+
+class PrintDescending {
+    public void printNumbers() {
+        for (int i = 10; i >= 5; i--) {
+            System.out.println(i);
+            delay();
+        }
+    }
+}
+
+class PrintLetters {
+    public void printLetters() {
+        for (char c = 'a'; c <= 'f'; c++) {
+            System.out.println(c);
+            delay();
+        }
+    }
+}
+
+public class SimpleProgram {
+    public static void main(String[] args) {
+        new PrintAscending().printNumbers();
+        new PrintDescending().printNumbers();
+        new PrintLetters().printLetters();
+    }
+
+    private static void delay() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+//
+
+class AscendingThread extends Thread {
+    @Override
+    public void run() {
+        for (int i = 5; i <= 10; i++) {
+            System.out.println(i);
+            delay();
+        }
+    }
+}
+
+class DescendingThread extends Thread {
+    @Override
+    public void run() {
+        for (int i = 10; i >= 5; i--) {
+            System.out.println(i);
+            delay();
+        }
+    }
+}
+
+class LettersThread extends Thread {
+    @Override
+    public void run() {
+        for (char c = 'a'; c <= 'f'; c++) {
+            System.out.println(c);
+            delay();
+        }
+    }
+}
+
+public class ThreadedProgram {
+    public static void main(String[] args) {
+        new AscendingThread().start();
+        new DescendingThread().start();
+        new LettersThread().start();
+    }
+
+    private static void delay() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+// Part (a): Executes sequentially—one task completes before the next starts.
+// Part (b): Runs tasks concurrently, leading to interleaved output depending on thread scheduling.
+
+
+---------------------------Cricket
+
+// Abstract Player Class
+abstract class Player {
+    protected int playerID;
+    protected String name;
+    protected String country;
+    protected int[] scores;
+
+    public Player(int playerID, String name, String country, int[] scores) {
+        this.playerID = playerID;
+        this.name = name;
+        this.country = country;
+        this.scores = scores;
+    }
+
+    public int getPlayerID() {
+        return playerID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public abstract void addScore(int score);
+
+    public abstract void printDetails();
+}
+
+// Batsman Class
+class Batsman extends Player {
+    private int runs;
+
+    public Batsman(int playerID, String name, String country, int[] scores) {
+        super(playerID, name, country, scores);
+        this.runs = calculateRuns(scores);
+    }
+
+    private int calculateRuns(int[] scores) {
+        int total = 0;
+        for (int score : scores) {
+            total += score;
+        }
+        return total;
+    }
+
+    public int getRuns() {
+        return runs;
+    }
+
+    @Override
+    public void addScore(int score) {
+        if (score >= 0 && score <= 100) {
+            int[] newScores = new int[scores.length + 1];
+            System.arraycopy(scores, 0, newScores, 0, scores.length);
+            newScores[scores.length] = score;
+            scores = newScores;
+            runs += score;
+        }
+    }
+
+    @Override
+    public void printDetails() {
+        System.out.println("Batsman ID: " + playerID);
+        System.out.println("Batsman Name: " + name);
+        System.out.println("Country: " + country);
+        System.out.print("Scores: ");
+        for (int score : scores) {
+            System.out.print(score + " ");
+        }
+        System.out.println("\nTotal Runs: " + runs);
+    }
+}
+
+// Bowler Class
+class Bowler extends Player {
+    private int wickets;
+
+    public Bowler(int playerID, String name, String country, int[] scores) {
+        super(playerID, name, country, scores);
+        this.wickets = calculateWickets(scores);
+    }
+
+    private int calculateWickets(int[] scores) {
+        int total = 0;
+        for (int score : scores) {
+            total += score;
+        }
+        return total;
+    }
+
+    public int getWickets() {
+        return wickets;
+    }
+
+    @Override
+    public void addScore(int score) {
+        if (score >= 0 && score <= 10) {
+            int[] newScores = new int[scores.length + 1];
+            System.arraycopy(scores, 0, newScores, 0, scores.length);
+            newScores[scores.length] = score;
+            scores = newScores;
+            wickets += score;
+        }
+    }
+
+    @Override
+    public void printDetails() {
+        System.out.println("Bowler ID: " + playerID);
+        System.out.println("Bowler Name: " + name);
+        System.out.println("Country: " + country);
+        System.out.print("Scores: ");
+        for (int score : scores) {
+            System.out.print(score + " ");
+        }
+        System.out.println("\nTotal Wickets: " + wickets);
+    }
+}
+
+public class CricketApplication {
+    public static void main(String[] args) {
+        // Initialize Batsman and Bowler objects
+        Batsman[] batsmen = {
+            new Batsman(1, "Sachin Tendulkar", "India", new int[]{42, 0, 61, 15, 0, 100, 23, 64, 41, 0, 26}),
+            new Batsman(2, "Virat Kohli", "India", new int[]{0, 25, 10, 60, 11, 0, 40, 11, 0, 2, 0}),
+            new Batsman(3, "MS Dhoni", "India", new int[]{6, 22, 48, 0, 11, 69, 0, 21, 19, 0, 42}),
+            new Batsman(4, "Ricky Ponting", "Australia", new int[]{11, 0, 28, 0, 64, 18, 45, 26, 0, 11, 0}),
+            new Batsman(5, "Brian Lara", "West Indies", new int[]{0, 13, 21, 47, 0, 69, 17, 0, 12, 0, 40})
+        };
+
+        Bowler[] bowlers = {
+            new Bowler(1, "Muttiah Muralitharan", "Sri Lanka", new int[]{0, 10, 6, 8, 0, 1, 0, 2, 4, 0, 6}),
+            new Bowler(2, "Shane Warne", "Australia", new int[]{6, 0, 1, 0, 2, 0, 4, 10, 0, 6, 8}),
+            new Bowler(3, "Wanindu Hasaranga", "Sri Lanka", new int[]{0, 1, 0, 6, 8, 4, 2, 0, 6, 0, 10}),
+            new Bowler(4, "Glenn McGrath", "Australia", new int[]{4, 2, 6, 0, 10, 0, 1, 8, 6, 0, 0}),
+            new Bowler(5, "Dale Steyn", "South Africa", new int[]{0, 4, 0, 2, 1, 6, 10, 0, 8, 6, 0})
+        };
+
+        // Add score to Batsman 1
+        batsmen[0].addScore(14);
+
+        // Print details of all batsmen
+        System.out.println("\nBatsman Details:");
+        for (Batsman b : batsmen) {
+            b.printDetails();
+            System.out.println();
+        }
+
+        // Find and print details of Batsman with highest runs
+        Batsman topBatsman = batsmen[0];
+        for (Batsman b : batsmen) {
+            if (b.getRuns() > topBatsman.getRuns()) {
+                topBatsman = b;
+            }
+        }
+        System.out.println("\nBatsman with Highest Score:");
+        topBatsman.printDetails();
+
+        // Print details of all bowlers
+        System.out.println("\nBowler Details:");
+        for (Bowler b : bowlers) {
+            b.printDetails();
+            System.out.println();
+        }
+
+        // Find and print details of Bowler with highest wickets
+        Bowler topBowler = bowlers[0];
+        for (Bowler b : bowlers) {
+            if (b.getWickets() > topBowler.getWickets()) {
+                topBowler = b;
+            }
+        }
+        System.out.println("\nBowler with Highest Wickets:");
+        topBowler.printDetails();
+
+        // Print details of players from Australia
+        System.out.println("\nPlayers from Australia:");
+        System.out.println("Batsmen from Australia:");
+        for (Batsman b : batsmen) {
+            if ("Australia".equals(b.getCountry())) {
+                b.printDetails();
+                System.out.println();
+            }
+        }
+        System.out.println("Bowlers from Australia:");
+        for (Bowler b : bowlers) {
+            if ("Australia".equals(b.getCountry())) {
+                b.printDetails();
+                System.out.println();
+            }
+        }
+    }
+}
